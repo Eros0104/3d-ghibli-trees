@@ -3,7 +3,7 @@ const Ground = () => {
     <mesh
       castShadow
       receiveShadow
-      position={[0, -1, 0]}
+      position={[0, -3, 0]}
       rotation={[-Math.PI / 2, 0, 0]}
     >
       <planeGeometry args={[100, 100, 1, 1]} />

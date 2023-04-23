@@ -1,47 +1,29 @@
-import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MeshStandardMaterial } from "three";
-
-const Box = (props: any) => {
-  const mesh = useRef() as any;
-  const [isHover, setIsHover] = useState(false);
-  const [isActive, setIsActive] = useState(false);
-  useFrame((state, delta) => (mesh.current.rotation.x += delta));
-
-  const setHoverToTrue = () => {
-    setIsHover(true);
-  };
-
-  const setHoverToFalse = () => {
-    setIsHover(false);
-  };
-
-  const toggleActive = () => {
-    setIsActive(!isActive);
-  };
-
-  return (
-    <mesh
-      {...props}
-      ref={mesh}
-      scale={isActive ? 1.5 : 1}
-      onClick={toggleActive}
-      onPointerOver={setHoverToTrue}
-      onPointerOut={setHoverToFalse}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={isHover ? "hotpink" : "pink"} />
-    </mesh>
-  );
-};
+import { useRef } from "react";
+import { Trees } from "./Trees";
 
 const Scene = () => {
+  const refTrees = useRef(null);
+
+  useFrame(() => {
+    const { current: group } = refTrees;
+    if (group) {
+      // @ts-ignore
+      group.rotation.x = group.rotation.y += 0.01;
+    }
+  });
+
   return (
     <>
       <ambientLight intensity={0.1} />
-      <pointLight position={[10, 10, 10]} castShadow />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
+      <directionalLight
+        color="white"
+        position={[15, 15, 15]}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+      />
+      <Trees ref={refTrees} />
     </>
   );
 };
