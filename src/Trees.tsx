@@ -1,19 +1,23 @@
 import { forwardRef, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
-import { RedFormat, DataTexture } from "three";
+import { Color, Vector3 } from "three";
+import { ToonShader } from "./ToonShader";
 
 export const Trees = forwardRef((props: any, ref) => {
   const { nodes } = useGLTF("/trees.glb") as any;
-  const toneMap = useMemo(() => {
-    const format = RedFormat;
-    const colors = new Uint8Array(4);
-    for (let i = 0; i <= colors.length; i++) {
-      colors[i] = (i / colors.length) * 256;
-    }
-    const gradientMap = new DataTexture(colors, colors.length, 1, format);
-    gradientMap.needsUpdate = true;
-    return gradientMap;
+
+  const uniforms = useMemo(() => {
+    return {
+      ...ToonShader.uniforms,
+      uBaseColor: { value: new Color("#49897C") },
+      uAmbientLightColor: { value: new Color("#050505") },
+      uDirLightColor: { value: new Color("white") },
+      uDirLightPos: { value: new Vector3(15, 15, 15) },
+      uLineColor1: { value: new Color("#808080") },
+      uLineColor2: { value: new Color("black") },
+    };
   }, []);
+
   return (
     <group {...props} ref={ref} dispose={null}>
       <mesh
@@ -22,7 +26,7 @@ export const Trees = forwardRef((props: any, ref) => {
         geometry={nodes.Foliage.geometry}
         position={[0, 0, 0]}
       >
-        <meshToonMaterial gradientMap={toneMap} color={"#234549"} />
+        <shaderMaterial attach="material" {...ToonShader} uniforms={uniforms} />
       </mesh>
     </group>
   );
